@@ -5,8 +5,8 @@ const cors = require("cors");
 app.use(cors());
 const port = process.env.PORT || 8080;
 const router = express.Router();
-const path = require('path');
-const fs = require('fs');
+const path = require("path");
+const fs = require("fs");
 const { ObjectId } = require("mongodb");
 
 const logger = (req, res, next) => {
@@ -15,7 +15,6 @@ const logger = (req, res, next) => {
 };
 
 app.use(express.json());
-
 
 async function main() {
   const uri =
@@ -58,17 +57,17 @@ function connectToDB() {
  */
 
 const imageMiddleware = (req, res) => {
-  const imagepath = path.join(__dirname, 'lesson-images', req.url);
+  const imagepath = path.join(__dirname, "lesson-images", req.url);
   fs.stat(imagepath, (err, stats) => {
     if (err) {
-      res.status(404).send('Image not present');
+      res.status(404).send("Image not present");
       return;
     }
     fs.createReadStream(imagepath).pipe(res);
   });
 };
 
-app.use('/lesson-images', imageMiddleware);
+app.use("/lesson-images", imageMiddleware);
 
 // API to get all lessons
 router.get("/lessons", (req, res, next) => {
