@@ -61,9 +61,9 @@ function connectToDB() {
 
 // API to get all lessons
 router.get("/lessons", (req, res, next) => {
-  let client = connectToDB();
+  let client = connectToDB()
   listDatabase(client).then((data) => {
-    res.send(data);
+    res.send(data)
   });
 });
 
