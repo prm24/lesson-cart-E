@@ -3,10 +3,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 app.use(cors());
-const { ObjectId } = require("mongodb");
+const port = process.env.PORT || 8080;
 const router = express.Router();
 const path = require('path');
-const port = process.env.PORT || 3030;
+const { ObjectId } = require("mongodb");
 
 const logger = (req, res, next) => {
   console.log("server console", `${req.method} ${req.originalUrl}`);
@@ -15,8 +15,8 @@ const logger = (req, res, next) => {
 
 app.use(express.json());
 
-const publicPath = path.join(__dirname, 'public');
 app.use('/lessons/:id/image', express.static(publicPath))
+const publicPath = path.join(__dirname, 'public');
 
 
 async function main() {
