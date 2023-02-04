@@ -6,7 +6,7 @@ app.use(cors());
 const { ObjectId } = require("mongodb");
 const router = express.Router();
 const path = require('path');
-const port = 3030;
+const port = process.env.PORT || 3030;
 
 const logger = (req, res, next) => {
   console.log("server console", `${req.method} ${req.originalUrl}`);
