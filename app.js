@@ -6,6 +6,7 @@ app.use(cors());
 const port = process.env.PORT || 8080;
 const router = express.Router();
 const path = require('path');
+const fs = require('fs');
 const { ObjectId } = require("mongodb");
 
 const logger = (req, res, next) => {
@@ -14,9 +15,6 @@ const logger = (req, res, next) => {
 };
 
 app.use(express.json());
-
-app.use('/lessons/:id/image', express.static(publicPath))
-const publicPath = path.join(__dirname, 'public');
 
 
 async function main() {
@@ -30,7 +28,7 @@ async function main() {
       .collection("orders")
       .deleteMany({})
       .then((res) => {
-        console.log("orders Deleted successfully");
+        // console.log("orders Deleted successfully");
       })
       .catch((err) => {
         console.log(err);
@@ -59,24 +57,38 @@ function connectToDB() {
  * API's
  */
 
+const imageMiddleware = (req, res) => {
+  const imagepath = path.join(__dirname, 'lesson-images', req.url);
+  fs.stat(imagepath, (err, stats) => {
+    if (err) {
+      res.status(404).send('Image not present');
+      return;
+    }
+    fs.createReadStream(imagepath).pipe(res);
+  });
+};
+
+app.use('/lesson-images', imageMiddleware);
+
 // API to get all lessons
 router.get("/lessons", (req, res, next) => {
-  let client = connectToDB()
+  let client = connectToDB();
   listDatabase(client).then((data) => {
-    res.send(data)
+    res.send(data);
   });
 });
 
 // API to get all lessons
 router.post("/search", (req, res, next) => {
-
   let client = connectToDB();
-  searchText(client,req.body.text).then((data) => {
-    console.log(data)
-    res.send(data);
-  }).catch((error) => {
-    res.status(404).send("somethings went wrong please try again");
-  });;
+  searchText(client, req.body.text)
+    .then((data) => {
+      console.log(data);
+      res.send(data);
+    })
+    .catch((error) => {
+      res.status(404).send("somethings went wrong please try again");
+    });
 });
 
 // API to get all orders
@@ -160,10 +172,14 @@ router.delete("/orders", (req, res) => {
 
 //search by text
 async function searchText(client, searchedText) {
-  let serachRESULT = await client.db("test").collection("products").find({
-    name: searchedText,
-  }).toArray();
-  return serachRESULT
+  let serachRESULT = await client
+    .db("test")
+    .collection("products")
+    .find({
+      name: searchedText,
+    })
+    .toArray();
+  return serachRESULT;
 }
 
 // create the lessons into the database
