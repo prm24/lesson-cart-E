@@ -77,7 +77,7 @@ router.get("/lessons", (req, res, next) => {
   });
 });
 
-// API to get all lessons
+// API to get all lesson
 router.post("/search", (req, res, next) => {
   let client = connectToDB();
   searchText(client, req.body.text)
